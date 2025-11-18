@@ -583,7 +583,7 @@ async function submitForm() {
   const formData = { email: email.value, message: msg.value };
 
   try {
-    const response = await fetch("[https://getform.io/f/bnlewqwb](https://getform.io/f/bnlewqwb)", {
+    const response = await fetch("[https://getform.io/<your-account-generated-url>](https://getform.io/<your-account-generated-url>)", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
