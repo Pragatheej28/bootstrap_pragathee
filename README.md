@@ -1,4 +1,4 @@
-# Styling Web Pages using Bootstrap
+# A. Styling Web Pages using Bootstrap
 This tutorial guides you through the building blocks of designing webpages using **Bootstrap 5**, leveraging the provided code snippets as sequential, modular blocks to create a responsive layout using modern components and utility classes.
 
 **Objective:**
@@ -405,4 +405,205 @@ Refer to the step-by-step guide below. Use the provided code to construct the we
     >
   </div>
 </footer>
+```
+
+
+# B. Airstream Contact Form - Bootstrap Implementation
+
+This project demonstrates the use of **Bootstrap 5** for handling a web form, including client-side validation, asynchronous form submission, and user feedback via a customizable Bootstrap Toast component.
+
+**Objective**
+
+* **Responsive Layout:** Utilizes Bootstrap's grid and utility classes for a **mobile-first design**.
+* **Client-Side Validation:** Implements custom JavaScript logic and HTML5 `required` attributes to validate form inputs **before submission**.
+* **Asynchronous Submission:** Uses the native **`fetch` API** for non-blocking form submission to an external service (e.g., `https://getform.io`).
+* **User Feedback:** Employs a customizable **Bootstrap Toast** to provide immediate, non-intrusive feedback (success or error messages) to the user.
+
+---
+
+## 📄 File Structure & Key Components Overview
+
+This Readme focuses on the core HTML structure and the internal `<script>` block that manages the form logic.
+
+| Component | Description |
+| :--- | :--- |
+| **HTML `<head>`** | Imports Bootstrap CSS, Font Awesome CSS, and custom styles. |
+| **Toast** | Defines the main Bootstrap Toast container and the customizable `#msg-toast` element. |
+| **Contact Form** | Defines the form with `class="needs-validation"` and the submission handler `onsubmit="submitForm();"`. |
+| **Bootstrap JS** | Imports Bootstrap's JS bundle via CDN for component functionality (Toast, Navbar). |
+| **`submitForm()` function** | Handles form submission, custom regex validation, and the asynchronous `fetch` request. |
+| **`showToast()` function** | Reusable function to manage the Bootstrap Toast's appearance, message, and visibility. |
+
+---
+
+## ⚙️ Core Logic: Form Handling & Feedback
+
+The entire form submission flow is managed by two primary JavaScript functions: `submitForm()` and `showToast()`.
+
+### 📖 1. The `submitForm()` Function
+
+This function is triggered by the form's `onsubmit="submitForm();"` event.
+
+* **`event.preventDefault();`:** Crucial step to stop the default browser form submission, allowing for custom JavaScript validation and asynchronous submission.
+* **Input Capture:** Retrieves the values of the `txtEmail` and `txtMessage` input fields.
+* **Custom Validation:**
+    * Checks for empty fields.
+    * Uses a **Regex (`emailRegex`)** to validate the email format.
+    * Uses a **Regex (`msgRegex`)** to sanitize the message content, preventing potential injection scripts.
+    * If any validation fails, it calls `showToast()` with `bgColor: "danger"` and an appropriate error message, then immediately returns.
+* **Submission (`fetch`):** If validation passes, it performs an **`await fetch` POST request** to the API endpoint with the form data.
+* **Response Handling:**
+    * On a successful `response.ok`: Calls `showToast()` with `bgColor: "success"`, delays for 4 seconds, and redirects the user to `/index.html`.
+    * On an unsuccessful response or a `catch` error: Calls `showToast()` with `bgColor: "danger"` and an appropriate error message.
+
+### 📖 2. The `showToast()` Function
+
+This utility function simplifies showing the feedback toast.
+
+| Parameter | Purpose |
+| :--- | :--- |
+| **`toastElement`** | The Bootstrap toast DOM object (`#msg-toast`). |
+| **`toastBodyElement`** | The body element within the toast to hold the message (`#msg-toast-body`). |
+| **`bgColor`** | The desired Bootstrap background color class (e.g., `"success"`, `"danger"`) which is dynamically added. |
+| **`msg`** | The text message to display in the toast. |
+
+### 📖 3. Form Structure & Validation Hook
+
+The HTML form is set up to utilize Bootstrap's validation styling and defer submission control entirely to a custom JavaScript function.
+
+| Attribute | Value/Purpose |
+| :--- | :--- |
+| `class` | `needs-validation` (Enables Bootstrap validation styles) |
+| `novalidate` | **Crucial:** Prevents the browser's default HTML5 validation, enabling custom JS control. |
+| `onsubmit` | `submitForm();` (Calls the main JavaScript handler upon submission.) |
+
+Each input field includes the `required` attribute and a corresponding `.invalid-feedback` element for styling validation errors.
+
+**HTML Example:**
+
+```html
+<div class="mb-4">
+  <label class="form-label text-white fw-lighter" for="txtEmail">Email address</label>
+  <input type="email" id="txtEmail" class="form-control" required />
+  <div class="invalid-feedback text-white">
+    Please enter a valid email.
+  </div>
+</div>
+```
+
+### 📖 4. The Bootstrap Toast for Feedback
+
+A single, reusable **Toast component (`#msg-toast`)** is defined globally at the top of the `<body>`. It serves as the application's primary mechanism for delivering feedback (e.g., success or error messages) to the user.
+
+#### Component Structure and Purpose
+
+The table below details the key classes and IDs used in the toast implementation:
+
+| Component Class/ID | Purpose |
+| :--- | :--- |
+| `.toast-container` | **Wrapper for all toasts.** Ensures toasts stack correctly and provides a central point for positioning. |
+| `top-0 start-50 translate-middle-x` | **Positioning Utility Classes:** Centers the toast container horizontally at the very top of the viewport. |
+| `#msg-toast` | The main **Toast element**. Configured to auto-hide after **4000ms** (set via `data-bs-delay="4000"`). |
+| `#msg-toast-body` | The **placeholder** where the dynamic success or error message is injected by JavaScript before showing the toast. |
+
+**Toast HTML Structure:**
+
+<div class="toast-container p-3 top-0 start-50 translate-middle-x">
+  <div
+    id="msg-toast"
+    class="toast align-items-center mt-2"
+    role="alert"
+    data-bs-delay="4000"
+  >
+    <div id="msg-toast-body" class="toast-body">
+    </div>
+  </div>
+</div>
+
+### 📖 5. JavaScript Logic (`<script>` block)
+
+1. showToast() Function
+This utility function manages the appearance and display of the Bootstrap Toast based on the submission result.
+
+```javascript
+function showToast({ toastElement, toastBodyElement, bgColor, msg }) {
+  // 1. Remove previous background colors to allow dynamic styling
+  toastElement.classList.remove("bg-success", "bg-danger"); 
+  
+  // 2. Set the new background color and text
+  toastElement.classList.add(`bg-${bgColor}`, "text-white");
+  toastBodyElement.textContent = msg;
+  
+  // 3. Initialize and show the Bootstrap Toast component
+  const toast = new bootstrap.Toast(toastElement);
+  toast.show();
+}
+```
+
+### 📖 6. `submitForm()` Function
+
+This is the main form handler, responsible for preventing default submission, custom validation, asynchronous API submission, and displaying feedback.
+
+```javascript
+async function submitForm() {
+  event.preventDefault(); // Stop default browser submission
+  
+  // 1. Capture Inputs and Toast Elements
+  const email = document.getElementById("txtEmail");
+  const msg = document.getElementById("txtMessage");
+  const toastElement = document.getElementById("msg-toast");
+  const toastBodyElement = document.getElementById("msg-toast-body");
+
+  // --- 2. Custom Validation Checks (Pre-Submission) ---
+  
+  // Check 1: Empty Fields
+  if (email.value === "" || msg.value === "") {
+    showToast({ 
+      // Feedback using 'danger' color
+      toastElement, toastBodyElement, bgColor: "danger", msg: "All inputs must not be empty." 
+    });
+    return;
+  }
+  
+  // Check 2: Email Regex Validation
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailRegex.test(email.value)) {
+    showToast({ toastElement, toastBodyElement, bgColor: "danger", msg: "Email is invalid." });
+    return;
+  }
+  
+  // Check 3: Message Content Sanitization Regex
+  const msgRegex = /^[a-zA-Z0-9\s.,!?'"-]*$/;
+  if (!msgRegex.test(msg.value)) {
+    showToast({ toastElement, toastBodyElement, bgColor: "danger", msg: "Message is incorrectly written." });
+    return;
+  }
+
+  // --- 3. Asynchronous Submission (FETCH) ---
+  const formData = { email: email.value, message: msg.value };
+
+  try {
+    const response = await fetch("[https://getform.io/f/bnlewqwb](https://getform.io/f/bnlewqwb)", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      // SUCCESS Feedback
+      showToast({ toastElement, toastBodyElement, bgColor: "success", msg: "Message sent. Redirecting to home." });
+
+      // Redirect after toast display
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      window.location = "/index.html";
+      
+    } else {
+      // API FAILURE Feedback (e.g., HTTP 4xx/5xx)
+      showToast({ toastElement, toastBodyElement, bgColor: "danger", msg: "Something went wrong. Please try again." });
+    }
+  } catch (error) {
+    // NETWORK/EXCEPTION FAILURE Feedback
+    showToast({ toastElement, toastBodyElement, bgColor: "danger", msg: "Error submitting message. Please try again later." });
+  }
+}
 ```
