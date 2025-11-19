@@ -54,6 +54,7 @@ The keyword !important declares higher priority over the specific style rules fo
   letter-spacing: 0.8rem;
 }
 
+
 .herobanner h1{
   background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 196, 0, 0.75), rgba(255, 255, 255, 0))
 }
@@ -68,6 +69,7 @@ The keyword !important declares higher priority over the specific style rules fo
   background-color:#ea383c !important;
   border: none !important;
 }
+
 
 .homepage-card img {
   width: 100%;
